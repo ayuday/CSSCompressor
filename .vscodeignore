@@ -10,4 +10,6 @@ tsconfig.json
 .claude/**
 plan.md
 test_manual.js
+test_html.js
 icon.svg
+README_ZH_CN.md

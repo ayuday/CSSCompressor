@@ -2,7 +2,7 @@
   "name": "css-compressor-minify",
   "displayName": "CSS Compressor Minify",
   "description": "Compress and format CSS in HTML, CSS, SCSS, LESS, SASS, and WXSS files with 4 compression modes (Expanded, Compact-Spaces, Compact, Compressed).",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "CSSCompressor",
   "icon": "icon.png",
   "repository": {
@@ -63,7 +63,7 @@
     "keybindings": [
       {
         "command": "css-compressor.compact",
-        "key": "shift+alt+f",
+        "key": "shift+alt+c",
         "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^(css|scss|less|sass|wxss|html)$/"
       }
     ],

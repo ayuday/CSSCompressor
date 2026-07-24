@@ -31,13 +31,13 @@
 - 自动识别 HTML 文件中的 `<style>` 标签并压缩其内容
 - 4 种压缩/格式化模式可选
 - 支持 SCSS/LESS/SASS 嵌套语法
-- 默认快捷键 `Shift+Alt+F`（Compact 模式）
+- 默认快捷键 `Shift+Alt+C`（Compact 模式）
 - 状态栏快捷按钮
 - 右键菜单快捷入口
 
 ## 配置项
 
-在 VS Code 设置中搜索 `cssCompressor` 可配置以下选项：
+在 VS Code 设置中搜索 `cssCompressorMinify` 可配置以下选项：
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
@@ -47,6 +47,8 @@
 | `cssCompressor.indentSize` | number | `4` | Expanded 模式的缩进空格数（1-8） |
 
 ## 使用方法
+
+Press shortcuts `shift+alt+c` to format CSS file (make sure current file you edit type is css)
 
 ### 命令面板
 
@@ -60,7 +62,7 @@
 
 ### 快捷键
 
-默认快捷键 `Shift+Alt+F` 绑定到 Compact 模式。你可以通过 VS Code 的 **键盘快捷方式** 设置（`Ctrl+K Ctrl+S`）为其他命令绑定自定义快捷键。
+默认快捷键 `shift+alt+c` 绑定到 Compact 模式。你可以通过 VS Code 的 **键盘快捷方式** 设置（`Ctrl+K Ctrl+S`）为其他命令绑定自定义快捷键。
 
 ### 右键菜单
 
