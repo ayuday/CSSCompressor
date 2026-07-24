@@ -1,0 +1,13 @@
+.vscode/**
+.github/**
+.gitignore
+src/**
+test/**
+node_modules/**
+tsconfig.json
+**/*.ts
+**/tsconfig.json
+.claude/**
+plan.md
+test_manual.js
+icon.svg

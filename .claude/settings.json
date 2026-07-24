@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const m = require\\('mocha'\\); console.log\\(typeof m\\)\")",
+      "Bash(node -e ' *)"
+    ]
+  }
+}
