@@ -1,0 +1,141 @@
+{
+  "name": "css-compressor",
+  "displayName": "CSS Compressor",
+  "description": "Compress and format CSS in HTML, CSS, SCSS, LESS, SASS, and WXSS files with 4 compression modes (Expanded, Compact-Spaces, Compact, Compressed).",
+  "version": "1.0.1",
+  "publisher": "CSSCompressor",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ayuday/CSSCompressor"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Formatters"
+  ],
+  "keywords": [
+    "css",
+    "compress",
+    "minify",
+    "format",
+    "scss",
+    "less",
+    "sass",
+    "wxss",
+    "html",
+    "beautify"
+  ],
+  "activationEvents": [
+    "onLanguage:css",
+    "onLanguage:scss",
+    "onLanguage:less",
+    "onLanguage:sass",
+    "onLanguage:wxss",
+    "onLanguage:html"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "css-compressor.compress",
+        "title": "CSS Compressor: Compress (Default Mode)"
+      },
+      {
+        "command": "css-compressor.expanded",
+        "title": "CSS Compressor: Format (Expanded)"
+      },
+      {
+        "command": "css-compressor.compactSpaces",
+        "title": "CSS Compressor: Compact-Spaces"
+      },
+      {
+        "command": "css-compressor.compact",
+        "title": "CSS Compressor: Compact"
+      },
+      {
+        "command": "css-compressor.compressed",
+        "title": "CSS Compressor: Compressed"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "css-compressor.compact",
+        "key": "shift+alt+f",
+        "when": "editorTextFocus && !editorReadonly && editorLangId =~ /^(css|scss|less|sass|wxss|html)$/"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "css-compressor.compress",
+          "when": "editorTextFocus && !editorReadonly && editorHasSelection && editorLangId =~ /^(css|scss|less|sass|wxss|html)$/",
+          "group": "1_modification"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CSS Compressor",
+      "properties": {
+        "cssCompressor.defaultMode": {
+          "type": "string",
+          "enum": [
+            "expanded",
+            "compact-spaces",
+            "compact",
+            "compressed"
+          ],
+          "enumDescriptions": [
+            "Expanded: Each property on its own line with indentation — best for reading and debugging.",
+            "Compact-Spaces: Remove extra newlines, single space between selectors and properties.",
+            "Compact: Remove extra newlines and spaces between selectors and properties.",
+            "Compressed: Remove all whitespace, everything in one line — best for production."
+          ],
+          "default": "compact",
+          "markdownDescription": "Default compression mode used by the **CSS Compressor: Compress (Default Mode)** command."
+        },
+        "cssCompressor.removeComments": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Remove all CSS comments (`/* ... */`) during compression. When `false`, comments are preserved."
+        },
+        "cssCompressor.preserveImportantComments": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Preserve important comments (`/*! ... */`) when `#cssCompressor.removeComments#` is enabled. Set to `false` to remove all comments including important ones."
+        },
+        "cssCompressor.indentSize": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 8,
+          "markdownDescription": "Number of spaces per indentation level (used in **Expanded** mode only)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "package": "npx @vscode/vsce package",
+    "publish": "npx @vscode/vsce publish",
+    "publish:patch": "npx @vscode/vsce publish patch",
+    "publish:minor": "npx @vscode/vsce publish minor",
+    "publish:major": "npx @vscode/vsce publish major"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.95.0",
+    "@vscode/test-electron": "^2.4.0",
+    "glob": "^13.0.6",
+    "mocha": "^11.7.6",
+    "typescript": "^5.7.0"
+  }
+}
