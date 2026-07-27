@@ -384,13 +384,12 @@ function formatCompactSpaces(tokens: Token[], _opts: CompressOptions): string {
     switch (tok.type) {
       case T.SELECTOR:
         if (d === 0 && cur) flush();
-        cur += tok.value;
+        cur += collapseSelectorWhitespace(tok.value);
         break;
       case T.BLOCK_OPEN:
         cur += ' {';
         d++;
         break;
-      case T.PROPERTY:
         cur += (cur.endsWith('{') || cur.endsWith(';') ? ' ' : '') + tok.value;
         break;
       case T.COLON:
@@ -437,7 +436,7 @@ function formatCompact(tokens: Token[], _opts: CompressOptions): string {
     switch (tok.type) {
       case T.SELECTOR:
         if (d === 0 && cur) flush();
-        cur += tok.value;
+        cur += collapseSelectorWhitespace(tok.value);
         break;
       case T.BLOCK_OPEN:
         cur += '{';
@@ -567,6 +566,51 @@ function compressValue(val: string): string {
 // ============================================================================
 // 工具函数：拆分多选择器
 // ============================================================================
+
+/**
+ * 压缩选择器文本中的空白（换行→空格，多余空格合并）。
+ * 注意：引号和括号内的空白保持不变。
+ */
+function collapseSelectorWhitespace(sel: string): string {
+  let result = '';
+  let sq = false, dq = false, paren = 0;
+
+  for (let i = 0; i < sel.length; i++) {
+    const c = sel[i];
+    if (c === '\\') { result += c; i++; if (i < sel.length) result += sel[i]; continue; }
+    if (c === "'" && !dq) { sq = !sq; result += c; continue; }
+    if (c === '"' && !sq) { dq = !dq; result += c; continue; }
+    if (!sq && !dq) {
+      if (c === '(') paren++;
+      if (c === ')') paren--;
+      if (paren > 0) { result += c; continue; }
+      // 空白字符 → 单个空格
+      if (c === '\n' || c === '\r' || c === '\t' || c === ' ') {
+        // 跳过前导空白
+        if (result.length === 0) continue;
+        // 跳过已有空格后的空白
+        if (result[result.length - 1] === ' ') continue;
+        // 逗号后紧跟选择器（不加空格，Compact 风格）
+        if (result[result.length - 1] === ',') continue;
+        result += ' ';
+        continue;
+      }
+      // 逗号 → 紧凑（去掉后面即将到来的空格，由上面的逻辑处理）
+      if (c === ',') {
+        // 去掉逗号前空格
+        if (result[result.length - 1] === ' ') {
+          result = result.slice(0, -1);
+        }
+        result += c;
+        continue;
+      }
+    }
+    result += c;
+  }
+
+  // 去除首尾空白
+  return result.trim();
+}
 
 function splitSelectors(selector: string): string[] {
   const parts: string[] = [];

@@ -83,11 +83,10 @@ body {
       }
     });
 
-    test('All 5 commands are registered', async () => {
+    test('All 4 commands are registered', async () => {
       const commands = await vscode.commands.getCommands(true);
 
       const expectedCommands = [
-        'css-compressor.compress',
         'css-compressor.expanded',
         'css-compressor.compactSpaces',
         'css-compressor.compact',

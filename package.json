@@ -2,7 +2,7 @@
   "name": "css-compressor-minify",
   "displayName": "CSS Compressor Minify",
   "description": "Compress and format CSS in HTML, CSS, SCSS, LESS, SASS, and WXSS files with 4 compression modes (Expanded, Compact-Spaces, Compact, Compressed).",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "publisher": "CSSCompressor",
   "icon": "icon.png",
   "repository": {
@@ -40,10 +40,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "css-compressor.compress",
-        "title": "CSS Compressor: Compress (Default Mode)"
-      },
-      {
         "command": "css-compressor.expanded",
         "title": "CSS Compressor: Format (Expanded)"
       },
@@ -70,7 +66,7 @@
     "menus": {
       "editor/context": [
         {
-          "command": "css-compressor.compress",
+          "command": "css-compressor.compact",
           "when": "editorTextFocus && !editorReadonly && editorHasSelection && editorLangId =~ /^(css|scss|less|sass|wxss|html)$/",
           "group": "1_modification"
         }
@@ -94,7 +90,7 @@
             "Compressed: Remove all whitespace, everything in one line — best for production."
           ],
           "default": "compact",
-          "markdownDescription": "Default compression mode used by the **CSS Compressor: Compress (Default Mode)** command."
+          "markdownDescription": "Default compression mode used by the **CSS Compressor: Compact** keyboard shortcut (`Shift+Alt+C`). Choose your preferred mode for quick access."
         },
         "cssCompressor.removeComments": {
           "type": "boolean",

@@ -1,7 +1,7 @@
 /**
  * CSS Compressor — VS Code 扩展入口
  *
- * 注册 5 个命令，处理编辑器中的 CSS/HTML 文件压缩。
+ * 注册 4 个命令，处理编辑器中的 CSS/HTML 文件压缩。
  */
 
 import * as vscode from 'vscode';
@@ -26,7 +26,6 @@ const SUPPORTED_LANGUAGES = new Set([
 // ============================================================================
 
 const COMMANDS = {
-  compress: 'css-compressor.compress',
   expanded: 'css-compressor.expanded',
   compactSpaces: 'css-compressor.compactSpaces',
   compact: 'css-compressor.compact',
@@ -142,17 +141,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // --- 注册命令 ---
 
-  // 使用默认模式压缩
-  context.subscriptions.push(
-    vscode.commands.registerCommand(COMMANDS.compress, () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!checkEditor(editor)) return;
-
-      const config = getCompressConfig();
-      processEditor(editor!, config.defaultMode);
-    })
-  );
-
   // Expanded 模式
   context.subscriptions.push(
     vscode.commands.registerCommand(COMMANDS.expanded, () => {
@@ -195,8 +183,8 @@ export function activate(context: vscode.ExtensionContext): void {
     100
   );
   statusBarItem.text = '$(file-code) CSS';
-  statusBarItem.tooltip = 'CSS Compressor: Compress CSS (Click)';
-  statusBarItem.command = COMMANDS.compress;
+  statusBarItem.tooltip = 'CSS Compressor: Compact (Click)';
+  statusBarItem.command = COMMANDS.compact;
   statusBarItem.show();
   context.subscriptions.push(statusBarItem);
 
@@ -205,7 +193,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration('cssCompressor')) {
         const config = getCompressConfig();
-        statusBarItem.tooltip = `CSS Compressor: Compress CSS (${getModeLabel(config.defaultMode)})`;
+        statusBarItem.tooltip = `CSS Compressor: ${getModeLabel(config.defaultMode)} (Click)`;
       }
     })
   );
