@@ -1,8 +1,8 @@
 {
-  "name": "css-compressor-minify",
-  "displayName": "CSS Compressor Minify",
+  "name": "css-compressor-beautify",
+  "displayName": "CSS Compressor Beautify",
   "description": "Compress and format CSS in HTML, CSS, SCSS, LESS, SASS, and WXSS files with 4 compression modes (Expanded, Compact-Spaces, Compact, Compressed).",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "publisher": "CSSCompressor",
   "icon": "icon.png",
   "repository": {
