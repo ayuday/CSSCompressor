@@ -13,7 +13,7 @@ Default shortcut after installation is `Shift+Alt+C` (Compact mode). You can cus
 - VS Code 1.95.0 or later
 - Node.js 22.0.0 or later
 
-> node.js Version management for nvm: [https://www.nvmnode.com](https://www.nvmnode.com)
+> Node.js Version management for nvm: [https://www.nvmnode.com](https://www.nvmnode.com)  
 > Markdown: [https://www.markdownlang.com](https://www.markdownlang.com)
 
 ## Supported Modes
