@@ -101,6 +101,7 @@ body{background-color: #f5f5f5;}
 .html - Compact after:
 ![After Compact compression](https://raw.githubusercontent.com/ayuday/CSSCompressor/main/assets/html-after.jpg)
 
+## Changelog
 
 ## License
 

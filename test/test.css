@@ -9,7 +9,7 @@ body {
     text-align: center;
     margin-bottom: 30px;
 }
-
+/* 标题 */ 
 .section-box h2 {
     font-size: 24px;
     font-weight: 700;
@@ -18,7 +18,7 @@ body {
     border-bottom: 2px solid #008de1;
     position: relative;
 }
-
+/* 列表项 */ 
 .pain-list li,
 .scene-list li,
 .feature-list li {

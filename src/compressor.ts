@@ -40,10 +40,6 @@ function preprocessComments(
   preserveImportantComments: boolean
 ): PreprocessResult {
   const comments = new Map<string, string>();
-  if (!removeComments) {
-    return { text: source, comments };
-  }
-
   let counter = 0;
   const out: string[] = [];
   let i = 0;
@@ -81,13 +77,18 @@ function preprocessComments(
       const commentText = source.substring(commentStart, endIdx + 2);
       const isImportant = source[commentStart + 2] === '!';
 
-      if (isImportant && preserveImportantComments) {
-        const sentinel = `__IC${counter}__`;
-        counter++;
-        comments.set(sentinel, commentText);
-        out.push(sentinel);
+      // 判断是否保留此注释
+      if (removeComments && !(isImportant && preserveImportantComments)) {
+        // 丢弃注释
+        i = endIdx + 2;
+        continue;
       }
-      // 否则丢弃注释
+
+      // 保留注释：用哨兵替换，tokenizer 可识别为 COMMENT token
+      const sentinel = `__IC${counter}__`;
+      counter++;
+      comments.set(sentinel, commentText);
+      out.push(sentinel);
 
       i = endIdx + 2;
       continue;
@@ -408,7 +409,8 @@ function formatCompactSpaces(tokens: Token[], _opts: CompressOptions): string {
         if (d === 0) flush();
         break;
       case T.COMMENT:
-        cur += ' ' + tok.value;
+        if (cur) flush();
+        lines.push(tok.value);
         break;
       case T.RAW:
         if (cur) flush();
@@ -460,7 +462,9 @@ function formatCompact(tokens: Token[], _opts: CompressOptions): string {
         if (d === 0) flush();
         break;
       case T.COMMENT:
+        if (cur) flush();
         cur += tok.value;
+        flush();
         break;
       case T.RAW:
         if (cur) flush();
@@ -500,7 +504,11 @@ function formatCompressed(tokens: Token[], _opts: CompressOptions): string {
       case T.VALUE: out.push(compressValue(tok.value)); break;
       case T.SEMICOLON: out.push(';'); break;
       case T.BLOCK_CLOSE: out.push('}'); break;
-      case T.COMMENT: out.push(tok.value); break;
+      case T.COMMENT:
+        if (out.length > 0) out.push('\n');
+        out.push(tok.value);
+        out.push('\n');
+        break;
       case T.RAW: out.push(tok.value + ';'); break;
     }
   }
@@ -536,31 +544,35 @@ function compressSelector(sel: string): string {
   return result;
 }
 
-// 压缩属性值中的空格（保留字符串/括号内的空格）
+// 压缩属性值中的空格（保留字符串/括号内的空格，但合并多余空白）
 function compressValue(val: string): string {
   let result = '';
   let sq = false, dq = false, paren = 0;
+  let lastWasSpace = false;
   for (let i = 0; i < val.length; i++) {
     const c = val[i];
-    if (c === '\\') { result += c; i++; if (i < val.length) result += val[i]; continue; }
-    if (c === "'" && !dq) { sq = !sq; result += c; continue; }
-    if (c === '"' && !sq) { dq = !dq; result += c; continue; }
+    if (c === '\\') { result += c; i++; if (i < val.length) result += val[i]; lastWasSpace = false; continue; }
+    if (c === "'" && !dq) { sq = !sq; result += c; lastWasSpace = false; continue; }
+    if (c === '"' && !sq) { dq = !dq; result += c; lastWasSpace = false; continue; }
     if (!sq && !dq) {
-      if (c === '(') paren++;
-      if (c === ')') paren--;
-      if (paren > 0) { result += c; continue; }
-      // 保留逗号后的必要空格（如 rgba、gradient 中用空格分隔的值）
+      if (c === '(') { paren++; result += c; lastWasSpace = false; continue; }
+      if (c === ')') { paren--; result += c; lastWasSpace = false; continue; }
+      // 引号外、括号外的空白：合并为单个空格
       if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
-        // 不添加空格，但某些 CSS 函数需要空格分隔参数
-        // 如 linear-gradient(direction, color1 stop1, color2 stop2)
-        // 实际上 color-stop 语法是 "color position" 用空格分隔
-        // 对于 Compressed 模式，我们一律不压缩括号内空格（上面已保留）
+        if (paren > 0) { result += c; lastWasSpace = false; continue; }
+        // 逗号后的空格直接跳过
+        if (!lastWasSpace && result.length > 0) {
+          result += ' ';
+          lastWasSpace = true;
+        }
         continue;
       }
     }
     result += c;
+    lastWasSpace = false;
   }
-  return result;
+  // 去除首尾空白
+  return result.trim();
 }
 
 // ============================================================================
