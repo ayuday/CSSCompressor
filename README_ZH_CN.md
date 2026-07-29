@@ -99,6 +99,23 @@ body{background-color: #f5f5f5;}
 .html - Compact after:
 ![Compact 模式压缩后](https://raw.githubusercontent.com/ayuday/CSSCompressor/main/assets/html-after.jpg)
 
+## Changelog
+
+详见 [CHANGELOG.md](CHANGELOG.md)。
+
+### 1.0.8 (2026-07-29)
+- 修复保留注释时，注释与紧随其后的 CSS 规则被合并到同一行的问题，注释现在始终独占一行
+- 修复 Compressed 模式下属性值中必要空格被错误删除的问题（如 `2px solid` → `2pxsolid`）
+- 排除 `assets/` 目录，不再打包到 .vsix 安装包中
+
+### 1.0.7 (2026-07-28)
+- 重构代码结构，提取核心压缩逻辑为独立模块，提升可读性和可维护性
+
+### 1.0.6 (2026-07-25)
+- 更新发布名称
+
+### 1.0.0 (2026-07-24)
+- 初始版本发布
 
 ## License
 
