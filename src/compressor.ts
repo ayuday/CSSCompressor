@@ -121,6 +121,8 @@ interface Token {
   type: T;
   value: string;
   depth: number;
+  /** 注释 token 前导空白（用于 compressed 模式内联注释） */
+  leadingWS?: string;
 }
 
 /**
@@ -182,6 +184,7 @@ function tokenize(source: string, comments: Map<string, string>): Token[] {
   }
 
   while (i < len) {
+    const wsStart = i;
     skipWS();
     if (i >= len) break;
 
@@ -189,7 +192,8 @@ function tokenize(source: string, comments: Map<string, string>): Token[] {
     let foundComment = false;
     for (const [sentinel, text] of comments) {
       if (source.startsWith(sentinel, i)) {
-        tokens.push({ type: T.COMMENT, value: text, depth });
+        const leadingWS = source.substring(wsStart, i);
+        tokens.push({ type: T.COMMENT, value: text, depth, leadingWS });
         i += sentinel.length;
         foundComment = true;
         break;
@@ -251,7 +255,11 @@ function tokenize(source: string, comments: Map<string, string>): Token[] {
     const prev = tokens.length > 0 ? tokens[tokens.length - 1] : null;
     const inBlock = depth > 0;
     const prevIsColon = prev?.type === T.COLON;
-    const prevIsBlockOrSemi = prev?.type === T.BLOCK_OPEN || prev?.type === T.SEMICOLON;
+    // COMMENT 也是声明边界：块内注释之后可能是属性或嵌套选择器
+    const prevIsBlockOrSemi =
+      prev?.type === T.BLOCK_OPEN ||
+      prev?.type === T.SEMICOLON ||
+      prev?.type === T.COMMENT;
 
     if (prevIsColon && inBlock) {
       // 属性值
@@ -391,7 +399,8 @@ function formatCompactSpaces(tokens: Token[], _opts: CompressOptions): string {
         cur += ' {';
         d++;
         break;
-        cur += (cur.endsWith('{') || cur.endsWith(';') ? ' ' : '') + tok.value;
+      case T.PROPERTY:
+        cur += tok.value;
         break;
       case T.COLON:
         cur += ': ';
@@ -504,11 +513,13 @@ function formatCompressed(tokens: Token[], _opts: CompressOptions): string {
       case T.VALUE: out.push(compressValue(tok.value)); break;
       case T.SEMICOLON: out.push(';'); break;
       case T.BLOCK_CLOSE: out.push('}'); break;
-      case T.COMMENT:
-        if (out.length > 0) out.push('\n');
+      case T.COMMENT: {
+        // 内联注释：保留同一行内注释前的空白，跨行空白折叠为一个空格
+        const ws = tok.leadingWS ?? '';
+        out.push(/[\n\r]/.test(ws) ? ' ' : ws);
         out.push(tok.value);
-        out.push('\n');
         break;
+      }
       case T.RAW: out.push(tok.value + ';'); break;
     }
   }

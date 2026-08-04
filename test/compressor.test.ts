@@ -52,6 +52,31 @@ suite('CSS Compressor — Unit Tests', () => {
       // The outer "outer */" would remain as non-comment text
       assert.ok(!result.includes('inner'), 'Inner comment text should be removed');
     });
+
+    test('Preserved comments after a property are not corrupted (no __IC leak)', () => {
+      const input = `.a {
+  fill: #fafbfc;      /* .key 默认浅灰白 */
+  stroke: #bfc8d4;    /* .key 边框色 */
+  stroke-width: 1;
+}`;
+      const result = compressCSS(input, 'compressed', false, true);
+      assert.ok(!result.includes('__IC'), 'Sentinel must not leak into output');
+      assert.ok(result.includes('fill:#fafbfc'), 'First property should compress correctly');
+      assert.ok(result.includes('stroke:#bfc8d4'), 'Property after comment should compress correctly');
+      assert.ok(result.includes('stroke-width:1'), 'Property after second comment should compress correctly');
+      assert.ok(result.includes('/* .key 默认浅灰白 */'), 'Comment should be preserved');
+      assert.ok(result.includes('/* .key 边框色 */'), 'Second comment should be preserved');
+    });
+
+    test('Property after preserved comment keeps its name (all modes)', () => {
+      const input = 'body { color: red; /* keep */ font-size: 14px; }';
+      for (const mode of ['compressed', 'compact', 'compact-spaces', 'expanded'] as const) {
+        const result = compressCSS(input, mode, false, true, 4);
+        assert.ok(result.includes('color'), `${mode}: color property should keep name`);
+        assert.ok(result.includes('font-size'), `${mode}: property after comment should keep name`);
+        assert.ok(!result.includes('__IC'), `${mode}: sentinel must not leak`);
+      }
+    });
   });
 
   // ==========================================================================
