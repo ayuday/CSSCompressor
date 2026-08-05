@@ -226,8 +226,8 @@ function tokenize(source: string, comments: Map<string, string>): Token[] {
       continue;
     }
 
-    // 冒号
-    if (ch === ':') {
+    // 冒号：仅在块内作为属性分隔符；块外的 : 属于选择器（如 :root、:hover）
+    if (ch === ':' && depth > 0) {
       i++;
       tokens.push({ type: T.COLON, value: ':', depth });
       continue;

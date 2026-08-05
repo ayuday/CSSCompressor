@@ -80,6 +80,37 @@ suite('CSS Compressor — Unit Tests', () => {
   });
 
   // ==========================================================================
+  // 选择器处理
+  // ==========================================================================
+
+  suite('Selector Handling', () => {
+
+    test(':root and :where(...) selectors are not split (all modes)', () => {
+      const input = `:root {
+  --ink: #18314f;
+}
+:where(a, button, textarea):focus-visible {
+  outline: 3px solid var(--orange);
+}`;
+      for (const mode of ['compressed', 'compact', 'compact-spaces', 'expanded'] as const) {
+        const result = compressCSS(input, mode, false, true, 4);
+        // compact-spaces 和 expanded 在 { 前保留空格，其余紧凑
+        const brace = (mode === 'compact-spaces' || mode === 'expanded') ? ' {' : '{';
+        assert.ok(result.includes(':root' + brace), `${mode}: :root should stay intact`);
+        assert.ok(result.includes(':where(a, button, textarea):focus-visible' + brace), `${mode}: :where(...) should stay intact`);
+        assert.ok(!result.includes(':\n'), `${mode}: colon should not be orphaned`);
+      }
+    });
+
+    test('Pseudo-element selectors keep colons', () => {
+      const input = '.foo::before { content: "x"; } a:hover { color: red; }';
+      const result = compressCSS(input, 'compressed', false, true);
+      assert.ok(result.includes('.foo::before'), '::before should be preserved');
+      assert.ok(result.includes('a:hover'), 'a:hover should be preserved');
+    });
+  });
+
+  // ==========================================================================
   // Compressed 模式
   // ==========================================================================
 
